@@ -25,61 +25,26 @@ module Forge
       build_assets
     end
 
-    # Use the rubyzip library to build a zip from the generated source
-    def zip(filename=nil)
-      filename = filename || File.basename(@project.root)
-      project_base = File.basename(@project.root)
-
-      zip_filename = File.join(File.basename(@package_path), "#{filename}.zip")
-      # Create a temporary file for RubyZip to write to
-      temp_filename = "#{zip_filename}.tmp"
-
-      File.delete(temp_filename) if File.exists?(temp_filename)
-
-      # Wrapping the zip creation in Thor's create_file to get "overwrite" prompts
-      # Note: I could be overcomplicating this
-      @task.create_file(zip_filename) do
-        Zip::ZipFile.open(temp_filename, Zip::ZipFile::CREATE) do |zip|
-          # Get all filenames in the build directory recursively
-          filenames = Dir[File.join(@project.build_path, '**', '*')]
-
-          # Remove the build directory path from the filename
-          filenames.collect! {|path| path.gsub(/#{@project.build_path}\//, '')}
-
-          # Add each file in the build directory to the zip file
-          filenames.each do |filename|
-            zip.add File.join(project_base, filename), File.join(@project.build_path, filename)
-          end
-        end
-
-        # Give Thor contents of zip file for "overwrite" prompt
-        File.open(temp_filename, 'rb') { |f| f.read }
-      end
-
-      # Clean up the temp file
-      File.delete(temp_filename)
-    end
-
     # Empty out the build directory
     def clean_build_directory
-      FileUtils.rm_rf Dir.glob(File.join(@project.build_path, '*'))
+      FileUtils.rm_rf @project.build_path.join('*')
     end
 
     def clean_templates
       # TODO: cleaner way of removing templates only?
-      Dir.glob(File.join(@project.build_path, '*.php')).each do |path|
-        FileUtils.rm path unless path.include?('functions.php')
+      Dir.glob(@project.build_path.join('**/*.php')).each do |path|
+        FileUtils.rm(file) unless path.include?('functions.php')
       end
     end
 
     def copy_templates
       # TODO restore ERB functionality
-      FileUtils.cp_r "#{ @templates_path }/.", @project.build_path
+      FileUtils.cp_r "#{ @templates_path.to_s }/.", @project.build_path
     end
 
     def clean_functions
-      FileUtils.rm File.join(@project.build_path, 'functions.php')
-      FileUtils.rm_rf File.join(@project.build_path, 'functions')
+      FileUtils.rm @project.build_path.join('functions.php')
+      FileUtils.rm_rf @project.build_path.join('functions')
     end
 
     def copy_functions
@@ -93,7 +58,7 @@ module Forge
         FileUtils.cp functions_php_path, @project.build_path
       end
 
-      functions_paths = Dir.glob(File.join(@functions_path, '*')).reject do |filename|
+      functions_paths = Dir.glob(@functions_path.join('*')).reject do |filename|
         [functions_erb_path, functions_php_path].include?(filename)
       end
 
@@ -104,40 +69,38 @@ module Forge
         # Iterate over all files in source/functions, skipping the actual functions.php file
         paths = Dir.glob(File.join(@functions_path, '**', '*')).reject {|filename| [functions_erb_path, functions_php_path].include?(filename) }
 
-        copy_paths_with_erb(paths, @functions_path, File.join(@project.build_path, 'functions'))
+        copy_paths_with_erb(paths, @functions_path, @project.build_path.join('functions'))
       end
     end
 
     def clean_includes
-      FileUtils.rm_rf File.join(@project.build_path, 'includes')
+      FileUtils.rm_rf @project.build_path.join('includes')
     end
 
     def copy_includes
       unless Dir.glob(File.join(@includes_path, '*')).empty?
         # Create the includes folder in the build directory
-        FileUtils.mkdir(File.join(@project.build_path, 'includes'))
+        FileUtils.mkdir(@project.build_path.join('includes'))
 
         # Iterate over all files in source/includes, so we can exclude if necessary
-        paths = Dir.glob(File.join(@includes_path, '**', '*'))
-        copy_paths_with_erb(paths, @includes_path, File.join(@project.build_path, 'includes'))
+        paths = Dir.glob(@includes_path.join('**', '*'))
+        copy_paths_with_erb(paths, @includes_path, @project.build_path.join('includes'))
       end
     end
 
     def clean_images
-      FileUtils.rm_rf File.join(@project.build_path, 'images')
+      FileUtils.rm_rf @project.build_path.join('images')
     end
 
     def build_assets
       [['style.css'], ['javascripts', 'theme.js'], ['javascripts', 'admin.js']].each do |asset|
-        destination = File.join(@project.build_path, asset)
-
+        destination = @project.build_path.join(*asset)
         sprocket = @sprockets.find_asset(asset.last)
 
         # Catch any sprockets errors and continue the process
         begin
           @task.shell.mute do
             FileUtils.mkdir_p(File.dirname(destination)) unless File.directory?(File.dirname(destination))
-
             sprocket.write_to(destination) unless sprocket.nil?
             # TODO replace with uglify
             # if @project.config[:compress_js] && destination.end_with?('.js')
@@ -166,7 +129,10 @@ module Forge
       end
 
       # Copy the images directory over
-      FileUtils.cp_r(File.join(@assets_path, 'images'), @project.build_path) if File.exists?(File.join(@assets_path, 'images'))
+      images_path = File.join(@assets_path, 'images')
+      puts images_path
+      puts File.exists?(images_path)
+      FileUtils.cp_r(images_path, @project.build_path) if File.exists?(images_path)
 
       # Check for screenshot and move it into main build directory
       Dir.glob(File.join(@project.build_path, 'images', '*')).each do |filename|
@@ -181,9 +147,9 @@ module Forge
     def copy_paths_with_erb(paths, source_dir, destination_dir)
       paths.each do |path|
         # Remove source directory from full file path to get the relative path
-        relative_path = path.gsub(source_dir, '')
+        relative_path = path.gsub(source_dir.to_s, '')
 
-        destination = File.join(destination_dir, relative_path)
+        destination = File.join(destination_dir.to_s, relative_path)
 
         if destination.end_with?('.erb')
           # Remove the .erb extension if the path was an erb file

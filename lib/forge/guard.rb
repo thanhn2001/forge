@@ -23,18 +23,16 @@ module Forge
         options_hash << ", :#{k} => '#{v}'"
       end
 
-      assets_path = @project.assets_path.gsub(/#{@project.root}\//, '')
-      source_path = @project.source_path.gsub(/#{@project.root}\//, '')
-      config_file = @project.config_file.gsub(/#{@project.root}\//, '')
+      assets_path = @project.assets_path.to_s.gsub(/#{@project.root}\//, '')
+      source_path = @project.source_path.to_s.gsub(/#{@project.root}\//, '')
+      config_file = @project.config_file.to_s.gsub(/#{@project.root}\//, '')
 
       guardfile_contents = %Q{
         guard 'forgeconfig'#{options_hash} do
           watch("#{config_file}")
         end
         guard 'forgeassets' do
-          watch(%r{#{assets_path}/javascripts/*})
-          watch(%r{#{assets_path}/stylesheets/*})
-          watch(%r{#{assets_path}/images/*})
+          watch(%r{#{assets_path}/*})
         end
         guard 'forgetemplates' do
           watch(%r{#{source_path}/templates/*})

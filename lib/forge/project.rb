@@ -17,7 +17,7 @@ module Forge
     attr_accessor :root, :config, :task
 
     def initialize(root, task, config={}, config_file=nil)
-      @root        = File.expand_path(root)
+      @root        = Pathname.new(File.expand_path(root))
       @config      = config || {}
       @task        = task
       @config_file = config_file
@@ -26,15 +26,27 @@ module Forge
     end
 
     def assets_path
-      @assets_path ||= File.join(self.source_path, 'assets')
+      @assets_path ||= Pathname.new(source_path.join('assets'))
+    end
+
+    def stylesheets_path
+      assets_path.join('stylesheets')
+    end
+
+    def images_path
+      assets_path.join('images')
+    end
+
+    def javascripts_path
+      assets_path.join('javascripts')
     end
 
     def build_path
-      File.join(self.root, '.forge', 'build')
+      @build_path ||= root.join('.forge', 'build')
     end
 
     def source_path
-      File.join(self.root, 'source')
+      @source_path ||= root.join('source')
     end
 
     def package_path
@@ -42,19 +54,19 @@ module Forge
     end
 
     def templates_path
-      File.join(self.source_path, 'templates')
+      source_path.join('templates')
     end
 
     def functions_path
-      File.join(self.source_path, 'functions')
+      source_path.join('functions')
     end
 
     def includes_path
-      File.join(self.source_path, 'includes')
+      source_path.join('includes')
     end
 
     def config_file
-      @config_file ||= File.join(self.root, 'config.rb')
+      @config_file ||= root.join('config.rb')
     end
 
     def global_config_file
