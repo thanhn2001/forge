@@ -116,8 +116,7 @@ module Forge
       config = {}
 
       begin
-        # Config file is just executed as straight ruby
-        eval(File.read(file))
+        instance_eval(File.read(file))
       rescue Exception => e
         @task.say "Error while evaluating config file:"
         @task.say e.message, Thor::Shell::Color::RED
