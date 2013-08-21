@@ -55,7 +55,6 @@ Gem::Specification.new do |s|
     "lib/forge.rb",
     "lib/forge/builder.rb",
     "lib/forge/cli.rb",
-    "lib/forge/config.rb",
     "lib/forge/engines.rb",
     "lib/forge/error.rb",
     "lib/forge/generator.rb",
@@ -66,7 +65,6 @@ Gem::Specification.new do |s|
     "lib/guard/forge/config.rb",
     "lib/guard/forge/functions.rb",
     "lib/guard/forge/templates.rb",
-    "spec/lib/forge/config_spec.rb",
     "spec/lib/forge/project_spec.rb",
     "spec/spec_helper.rb"
   ]
