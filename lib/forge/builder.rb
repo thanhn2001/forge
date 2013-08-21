@@ -1,9 +1,7 @@
 require 'sprockets'
 require 'sprockets-sass'
 require 'sass'
-require 'less'
 require 'zip/zip'
-require 'forge/engines'
 
 module Forge
   class Builder
@@ -147,24 +145,25 @@ module Forge
         destination = File.join(@project.build_path, asset)
 
         sprocket = @sprockets.find_asset(asset.last)
-
+        p sprocket
         # Catch any sprockets errors and continue the process
         begin
           @task.shell.mute do
             FileUtils.mkdir_p(File.dirname(destination)) unless File.directory?(File.dirname(destination))
+
             sprocket.write_to(destination) unless sprocket.nil?
+            # TODO replace with uglify
+            # if @project.config[:compress_js] && destination.end_with?('.js')
+            #   require "yui/compressor"
 
-            if @project.config[:compress_js] && destination.end_with?('.js')
-              require "yui/compressor"
+            #   # Grab the initial sprockets output
+            #   sprockets_output = File.open(destination, 'r').read
 
-              # Grab the initial sprockets output
-              sprockets_output = File.open(destination, 'r').read
-
-              # Re-write the file, minified
-              File.open(destination, 'w') do |file|
-                file.write(YUI::JavaScriptCompressor.new.compress(sprockets_output))
-              end
-            end
+            #   # Re-write the file, minified
+            #   File.open(destination, 'w') do |file|
+            #     file.write(YUI::JavaScriptCompressor.new.compress(sprockets_output))
+            #   end
+            # end
           end
         rescue Exception => e
           @task.say "Error while building #{asset.last}:"
@@ -218,11 +217,6 @@ module Forge
       ['javascripts', 'stylesheets', 'lib'].each do |dir|
         @sprockets.append_path File.join(@assets_path, dir)
       end
-
-      # Add assets/styleshets to load path for Less Engine
-      Tilt::LessTemplateWithPaths.load_path = File.join(@assets_path, 'stylesheets')
-
-      @sprockets.register_engine '.less', Tilt::LessTemplateWithPaths
 
       # Passing the @project instance variable to the Sprockets::Context instance
       # used for processing the asset ERB files. Ruby meta-programming, FTW.

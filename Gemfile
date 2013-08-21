@@ -7,15 +7,14 @@ gem "compass", "~> 0.12.2"
 gem "guard", "~> 1.3.0"
 gem "guard-livereload", "~> 1.0.3"
 gem "json", "~> 1.8.0"
-gem "less", "~> 2.2.2"
 gem "rack", "~> 1.3.5"
 gem "rb-fsevent", "~> 0.9.1"
 gem "rubyzip", "~> 0.9.4"
 gem "sass", "~> 3.2.0"
-gem "sprockets", "~> 2.0.2"
-gem "sprockets-sass", "~> 0.3.0"
-gem "thor", "~> 0.15.4"
-gem "yui-compressor", "~> 0.9.6"
+gem "sprockets"
+gem "sprockets-sass"
+gem "thor"
+
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
