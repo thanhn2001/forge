@@ -74,20 +74,8 @@ module Forge
     end
 
     def copy_templates
-      template_paths.each do |template_path|
-        # Skip directories
-        next if File.directory?(template_path)
-
-        if template_path.end_with?('.erb')
-          # Chop the .erb extension off the filename
-          destination = File.join(@project.build_path, File.basename(template_path).slice(0..-5))
-
-          write_erb(template_path, destination)
-        else
-          # Regular old copy of PHP-only files
-          FileUtils.cp template_path, @project.build_path
-        end
-      end
+      # TODO restore ERB functionality
+      FileUtils.cp_r "#{ @templates_path }/.", @project.build_path
     end
 
     def clean_functions
@@ -145,7 +133,7 @@ module Forge
         destination = File.join(@project.build_path, asset)
 
         sprocket = @sprockets.find_asset(asset.last)
-        p sprocket
+
         # Catch any sprockets errors and continue the process
         begin
           @task.shell.mute do
@@ -225,10 +213,6 @@ module Forge
           project.config
         end
       end
-    end
-
-    def template_paths
-      Dir.glob(File.join(@templates_path, '**', '*'))
     end
 
     # Generate a unique filename for the zip output
