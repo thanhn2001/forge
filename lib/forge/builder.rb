@@ -1,7 +1,6 @@
 require 'sprockets'
 require 'sprockets-sass'
 require 'sass'
-require 'zip/zip'
 
 module Forge
   class Builder
@@ -213,20 +212,6 @@ module Forge
           project.config
         end
       end
-    end
-
-    # Generate a unique filename for the zip output
-    def get_output_filename(basename)
-      package_path_base = File.basename(@package_path)
-      filename = File.join(package_path_base, "#{basename}.zip")
-
-      i = 1
-      while File.exists?(filename)
-        filename = File.join(package_path_base, "#{basename}(#{i}).zip")
-        i += 1
-      end
-
-      filename
     end
 
     protected

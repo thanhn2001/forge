@@ -60,16 +60,6 @@ module Forge
       directory(project.build_path, dir)
     end
 
-    desc "package FILENAME", "Compile and zip your project to FILENAME.zip"
-    method_option :config, :type => :string, :desc => "Name of alternate config file"
-    def package(filename=nil)
-      project = Forge::Project.new('.', self, nil, options[:config])
-
-      builder = Builder.new(project)
-      builder.build
-      builder.zip(filename)
-    end
-
     protected
     def do_link(project, path)
       begin

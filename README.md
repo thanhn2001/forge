@@ -34,10 +34,6 @@ Build your theme into the build_here directory:
 
     $ forge build build_here
 
-Package your theme as your_theme.zip:
-
-    $ forge package your_theme
-
 Get a little help with the Forge commands:
 
     $ forge help
