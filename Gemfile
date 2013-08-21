@@ -3,7 +3,8 @@ source "http://rubygems.org"
 # Example:
 #   gem "activesupport", ">= 2.3.5"
 
-gem "compass", "~> 0.12.2"
+gem "coffee-script"
+gem "compass", "~> 0.12"
 gem "guard", "~> 1.3.0"
 gem "guard-livereload", "~> 1.0.3"
 gem "json", "~> 1.8.0"
