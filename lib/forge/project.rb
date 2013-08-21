@@ -3,6 +3,9 @@ require 'compass'
 
 module Forge
   class Project
+
+    DEFAULT_COMPILED_ASSETS = %w(style.css theme.js admin.js)
+
     class << self
       def create(root, config, task)
         root = File.expand_path(root)
@@ -15,6 +18,7 @@ module Forge
     end
 
     attr_accessor :root, :config, :task
+    attr_accessor :compiled_assets
 
     def initialize(root, task, config={}, config_file=nil)
       @root        = Pathname.new(File.expand_path(root))
@@ -22,7 +26,9 @@ module Forge
       @task        = task
       @config_file = config_file
 
-      self.load_config if @config.empty?
+      @compiled_assets = DEFAULT_COMPILED_ASSETS.dup
+
+      load_config! if @config.empty?
     end
 
     def assets_path
@@ -88,7 +94,7 @@ module Forge
       File.basename(self.root).gsub(/\W/, '_')
     end
 
-    def load_config
+    def load_config!
       config = {}
 
       # Check for config.rb

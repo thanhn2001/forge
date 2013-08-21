@@ -93,28 +93,18 @@ module Forge
     end
 
     def build_assets
-      [['style.css'], ['javascripts', 'theme.js'], ['javascripts', 'admin.js']].each do |asset|
-        destination = @project.build_path.join(*asset)
-        sprocket = @sprockets.find_asset(asset.last)
+      @project.compiled_assets.each do |asset_file|
+        destination = @project.build_path.join(asset_file)
+        asset = @sprockets.find_asset(asset_file)
+
+        if !asset.nil?
+          puts "Compiling #{ asset.logical_path } ..."
+          asset.write_to(destination)
+        end
 
         # Catch any sprockets errors and continue the process
         begin
-          @task.shell.mute do
-            FileUtils.mkdir_p(File.dirname(destination)) unless File.directory?(File.dirname(destination))
-            sprocket.write_to(destination) unless sprocket.nil?
-            # TODO replace with uglify
-            # if @project.config[:compress_js] && destination.end_with?('.js')
-            #   require "yui/compressor"
-
-            #   # Grab the initial sprockets output
-            #   sprockets_output = File.open(destination, 'r').read
-
-            #   # Re-write the file, minified
-            #   File.open(destination, 'w') do |file|
-            #     file.write(YUI::JavaScriptCompressor.new.compress(sprockets_output))
-            #   end
-            # end
-          end
+        # FileUtils.mkdir_p(File.dirname(destination)) unless File.directory?(File.dirname(destination))
         rescue Exception => e
           @task.say "Error while building #{asset.last}:"
           @task.say e.message, Thor::Shell::Color::RED
@@ -122,6 +112,7 @@ module Forge
             file.puts(e.message)
           end
 
+          # TODO JASON LOLO WAT?
           # Re-initializing sprockets to prevent further errors
           # TODO: This is done for lack of a better solution
           init_sprockets
@@ -129,10 +120,7 @@ module Forge
       end
 
       # Copy the images directory over
-      images_path = File.join(@assets_path, 'images')
-      puts images_path
-      puts File.exists?(images_path)
-      FileUtils.cp_r(images_path, @project.build_path) if File.exists?(images_path)
+      FileUtils.cp_r(@project.images_path, @project.build_path)
 
       # Check for screenshot and move it into main build directory
       Dir.glob(File.join(@project.build_path, 'images', '*')).each do |filename|
@@ -167,7 +155,7 @@ module Forge
     def init_sprockets
       @sprockets = Sprockets::Environment.new
 
-      ['javascripts', 'stylesheets', 'lib'].each do |dir|
+      ['javascripts', 'stylesheets'].each do |dir|
         @sprockets.append_path File.join(@assets_path, dir)
       end
 
