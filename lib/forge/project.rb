@@ -91,11 +91,6 @@ module Forge
     def load_config
       config = {}
 
-      # Check for global (user) config.rb
-      if File.exists?(self.global_config_file)
-        config.merge!(load_ruby_config(self.global_config_file))
-      end
-
       # Check for config.rb
       if File.exists?(self.config_file)
         config.merge!(load_ruby_config(self.config_file))
