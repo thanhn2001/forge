@@ -31,9 +31,9 @@ module Forge
     end
 
     def clean_templates
-      # TODO: cleaner way of removing templates only?
-      Dir.glob(@project.build_path.join('**/*.php')).each do |file|
-        FileUtils.rm(file) unless file =~ /^functions\.php|includes\//
+      Dir.glob(@project.build_path.join('**/*.php')).each do |path|
+        # `path` is a absolute
+        FileUtils.rm(path) unless path =~ /functions\.php|includes\//
       end
     end
 
