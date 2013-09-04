@@ -47,6 +47,10 @@ module Forge
       assets_path.join('javascripts')
     end
 
+    def fonts_path
+      assets_path.join('fonts')
+    end
+
     def build_path
       @build_path ||= root.join('.forge', 'build')
     end

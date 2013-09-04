@@ -155,9 +155,9 @@ module Forge
     def init_sprockets
       @sprockets = Sprockets::Environment.new
 
-      ['javascripts', 'stylesheets'].each do |dir|
-        @sprockets.append_path File.join(@assets_path, dir)
-      end
+      @sprockets.append_path @project.javascripts_path
+      @sprockets.append_path @project.stylesheets_path
+      @sprockets.append_path @project.fonts_path
 
       # Passing the @project instance variable to the Sprockets::Context instance
       # used for processing the asset ERB files. Ruby meta-programming, FTW.
@@ -182,7 +182,7 @@ module Forge
         @task.say "Error while building #{File.basename(source)}:"
         @task.say e.message + "\n", Thor::Shell::Color::RED
         exit
-     end
+      end
     end
   end
 end
