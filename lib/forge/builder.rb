@@ -119,8 +119,9 @@ module Forge
         end
       end
 
-      # Copy the images directory over
+      # Copy the images & fonts directly directory over
       FileUtils.cp_r(@project.images_path, @project.build_path)
+      FileUtils.cp_r(@project.fonts_path, @project.build_path)
 
       # Check for screenshot and move it into main build directory
       Dir.glob(File.join(@project.build_path, 'images', '*')).each do |filename|
