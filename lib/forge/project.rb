@@ -79,10 +79,6 @@ module Forge
       @config_file ||= root.join('config.rb')
     end
 
-    def global_config_file
-      @global_config_file ||= File.join(ENV['HOME'], '.forge', 'config.rb')
-    end
-
     # Create a symlink from source to the project build dir
     def link(source)
       source = File.expand_path(source)
