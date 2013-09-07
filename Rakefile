@@ -11,21 +11,6 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "forge"
-  gem.homepage = "http://forge.thethemefoundry.com"
-  gem.license = "MIT"
-  gem.summary = %Q{A tool for developing wordpress themes}
-  gem.description = %Q{A toolkit for bootstrapping and developing WordPress themes.}
-  gem.email = "aadams@jestro.com"
-  gem.authors = ["Andy Adams", "Drew Strojny", "Matt Button"]
-  # dependencies defined in Gemfile
-  gem.files.include Dir.glob('**/*')
-end
-Jeweler::RubygemsDotOrgTasks.new
-
 require 'rspec/core'
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
