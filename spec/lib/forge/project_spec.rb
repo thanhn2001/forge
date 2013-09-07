@@ -1,4 +1,3 @@
-
 require 'forge/project'
 
 describe Forge::Project do
@@ -18,14 +17,13 @@ describe Forge::Project do
     end
   end
 
-
   describe :build_dir do
     it "should create an expanded path to the forge build directory" do
       @project.build_dir.should == '/tmp/.forge'
     end
   end
 
-  describe :theme_id do 
+  describe :theme_id do
     it "should be the same as the project folder" do
       @project.theme_id.should == 'tmp'
     end
