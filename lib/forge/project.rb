@@ -20,15 +20,14 @@ module Forge
     attr_accessor :root, :config, :task
     attr_accessor :compiled_assets
 
-    def initialize(root, task, config={}, config_file=nil)
+    def initialize(root, task, config = {})
       @root        = Pathname.new(File.expand_path(root))
-      @config      = config || {}
+      @config      = config
       @task        = task
-      @config_file = config_file
 
       @compiled_assets = DEFAULT_COMPILED_ASSETS.dup
 
-      load_config! if @config.empty?
+      load_config! if config_file.exist?
     end
 
     def assets_path
@@ -94,20 +93,6 @@ module Forge
       File.basename(self.root).gsub(/\W/, '_')
     end
 
-    def load_config!
-      config = {}
-
-      # Check for config.rb
-      if File.exists?(self.config_file)
-        config.merge!(load_ruby_config(self.config_file))
-      else
-        raise Error, "Could not find the config file, are you sure you're in a
-        forge project directory?"
-      end
-
-      @config = config
-    end
-
     def get_binding
       binding
     end
@@ -118,17 +103,13 @@ module Forge
 
     private
 
-    def load_ruby_config(file)
-      config = {}
-
-      begin
-        instance_eval(File.read(file))
-      rescue Exception => e
-        @task.say "Error while evaluating config file:"
-        @task.say e.message, Thor::Shell::Color::RED
+    def load_config!
+      if config_file.exist?
+        instance_eval(File.read(config_file))
+      else
+        raise Error, "Could not find the config file, are you sure you're in a
+        forge project directory?"
       end
-
-      return config
     end
 
   end
