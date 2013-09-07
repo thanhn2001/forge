@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'rubygems'
 require 'bundler'
 begin
@@ -9,10 +7,15 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
-require 'rake'
 
-require 'rspec/core'
+require 'rake'
+require 'cucumber/rake/task'
 require 'rspec/core/rake_task'
+
+Cucumber::Rake::Task.new(:features) do |t|
+  t.cucumber_opts = "features --format pretty"
+end
+
 RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
 end
@@ -22,10 +25,7 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-require 'cucumber/rake/task'
-Cucumber::Rake::Task.new(:features)
-
-task :default => :spec
+task :default => :features
 
 require 'rdoc/task'
 RDoc::Task.new do |rdoc|
