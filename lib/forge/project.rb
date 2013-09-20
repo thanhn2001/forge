@@ -21,9 +21,9 @@ module Forge
     attr_accessor :compiled_assets
 
     def initialize(root, task, config = {})
-      @root        = Pathname.new(File.expand_path(root))
-      @config      = config
-      @task        = task
+      @root   = Pathname.new(File.expand_path(root))
+      @config = config
+      @task   = task
 
       @compiled_assets = DEFAULT_COMPILED_ASSETS.dup
 
