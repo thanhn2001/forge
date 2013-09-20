@@ -25,7 +25,9 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-task :default => :features
+
+task :test => [:spec, :features]
+task :default => :test
 
 require 'rdoc/task'
 RDoc::Task.new do |rdoc|
