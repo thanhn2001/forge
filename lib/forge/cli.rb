@@ -18,7 +18,7 @@ module Forge
       theme = {}
       theme[:name] = dir
 
-      project = Forge::Project.create(dir, theme, self)
+      Forge::Project.create(dir, theme, self)
     end
 
     desc "link PATH", "Create a symbolic link to the compilation directory"
@@ -45,7 +45,7 @@ module Forge
     end
 
     desc "build DIRECTORY", "Build your theme into specified directory"
-    def build(dir='build')
+    def build(dir = 'build')
       project = Forge::Project.new('.', self)
 
       builder = Builder.new(project)
