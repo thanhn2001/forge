@@ -1,5 +1,5 @@
 Feature: Builder
-  Scenario: Does it run?
+  Scenario: Building a basic theme
     Given I am in a forge project named "basic-theme"
     When I successfully run `bundle exec forge build`
     Then the following files should exist:

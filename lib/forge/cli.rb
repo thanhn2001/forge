@@ -15,9 +15,7 @@ module Forge
 
     desc "create DIRECTORY", "Creates a Forge project"
     def create(dir)
-      theme = {}
-      theme[:name] = dir
-
+      theme = { name: dir }
       Forge::Project.create(dir, theme, self)
     end
 
@@ -36,29 +34,29 @@ module Forge
     long_desc "Watches the source directory in your project for changes, and reflects those changes in a compile folder"
     def watch
       project = Forge::Project.new('.', self)
-
-      # Empty the build directory before starting up to clean out old files
-      FileUtils.rm_rf project.build_path
-      FileUtils.mkdir_p project.build_path
-
-      Forge::Guard.start(project, self)
+      guard = Forge::Guard.new(project, self)
+      guard.start!
     end
 
     desc "build DIRECTORY", "Build your theme into specified directory"
+    option :clean, type: :boolean
     def build(dir = 'build')
       project = Forge::Project.new('.', self)
 
       builder = Builder.new(project)
       builder.build
 
-      Dir.glob(File.join(dir, '**', '*')).each do |file|
-        shell.mute { remove_file(file) }
+      if options[:clean]
+        Dir.glob(File.join(dir, '**', '*')).each do |file|
+          shell.mute { remove_file(file) }
+        end
       end
 
       directory(project.build_path, dir)
     end
 
     protected
+
     def do_link(project, path)
       begin
         project.link(path)
