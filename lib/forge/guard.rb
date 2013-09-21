@@ -13,7 +13,7 @@ module Forge
       @additional_guards << block
     end
 
-    def self.start(project, task, options={}, livereload={})
+    def self.start(project, task, options={})
       @project = project
       @task = task
       @builder = Builder.new(project)
@@ -44,16 +44,8 @@ module Forge
         end
       }
 
-      if @project.config[:livereload]
-        guardfile_contents << %Q{
-          guard 'livereload' do
-            watch(%r{#{source_path}/*})
-          end
-        }
-      end
-
       (@additional_guards || []).each do |block|
-        result = block.call(options, livereload)
+        result = block.call(options)
         guardfile_contents << result unless result.nil?
       end
 

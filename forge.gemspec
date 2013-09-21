@@ -20,7 +20,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency "coffee-script"
   gem.add_dependency "compass",      ">= 0.12"
   gem.add_dependency "guard",        "~> 1.3.0"
-  gem.add_dependency "guard-livereload", "~> 1.0.3"
   gem.add_dependency "json",         "~> 1.8.0"
   gem.add_dependency "rack",         ">= 1.4.5"
   gem.add_dependency "rake"
