@@ -1,55 +1,77 @@
-require 'guard'
-require 'guard/guard'
+require 'listen'
 
 module Forge
-  module Guard
+  class Guard
 
-    class << self
-      attr_accessor :project, :task, :builder
-    end
-
-    def self.add_guard(&block)
-      @additional_guards ||= []
-      @additional_guards << block
-    end
-
-    def self.start(project, task, options={})
+    def initialize(project, task, options = {})
       @project = project
-      @task = task
+      @task    = task
       @builder = Builder.new(project)
-
-      options_hash = ""
-      options.each do |k,v|
-        options_hash << ", :#{k} => '#{v}'"
-      end
-
-      assets_path = @project.assets_path.to_s.gsub(/#{@project.root}\//, '')
-      source_path = @project.source_path.to_s.gsub(/#{@project.root}\//, '')
-      config_file = @project.config_file.to_s.gsub(/#{@project.root}\//, '')
-
-      guardfile_contents = %Q{
-        guard 'forgeconfig'#{options_hash} do
-          watch("#{config_file}")
-        end
-        guard 'forgeassets' do
-          watch(%r{#{assets_path}/*})
-        end
-        guard 'forgetemplates' do
-          watch(%r{#{source_path}/templates/*})
-          watch(%r{#{source_path}/partials/*})
-        end
-        guard 'forgefunctions' do
-          watch(%r{#{source_path}/functions/*})
-          watch(%r{#{source_path}/includes/*})
-        end
-      }
-
-      (@additional_guards || []).each do |block|
-        result = block.call(options)
-        guardfile_contents << result unless result.nil?
-      end
-
-      ::Guard.start({ :guardfile_contents => guardfile_contents })
     end
+
+    def start!
+      @builder.clean_all
+
+      options = {
+        ignore: /\/\.[^\/]$/ # Hidden files
+      }
+      Listen.to(@project.source_path, options) do |modified, added, removed|
+
+        # This is all just proof of concept and will be promptly refined
+
+        modified.each do |path|
+          type = identify_file path
+          case type
+          when :asset
+            @task.say 'Recompiling assets'
+            @builder.compile_assets
+          when :template
+            @builder.copy_templates
+          when :function
+            @builder.copy_functions
+          when :include
+            @builder.copy_includes
+          end
+        end
+
+        added.each do |path|
+          type = identify_file path
+          case type
+          when :asset
+            @task.say 'Recompiling assets'
+            @builder.compile_assets
+          when :template
+            @builder.copy_templates
+          when :function
+            @builder.copy_functions
+          when :include
+            @builder.copy_includes
+          end
+        end
+
+        removed.each do |path|
+          type = identify_file path
+          case type
+          when :asset
+            @task.say 'Recompiling assets'
+            @builder.compile_assets
+          when :template
+            @builder.copy_templates
+          when :function
+            @builder.copy_functions
+          when :include
+            @builder.copy_includes
+          end
+        end
+      end
+
+      sleep
+    end
+
+    def identify_file(path)
+      type = path.match(/source\/([a-z]+)\//)[1]
+      type[0..-2].to_sym
+    end
+
   end
 end

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Forge::Project do
 
-  let(:project) { Forge::Project.new('/tmp/', nil, {:name => 'Hello'}) }
+  let(:project) { Forge::Project.new('/tmp/', nil, {name: 'Hello'}) }
 
   describe :config_file do
     it "should create an expanded path to the config file" do

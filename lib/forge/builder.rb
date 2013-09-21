@@ -124,7 +124,6 @@ module Forge
     def compile_assets
       precompile = [LOOSE_ASSETS, 'style.css', 'theme.js']
       @assets.each_logical_path(*precompile).each do |filename|
-        p filename
         compile_asset(filename)
       end
     end
