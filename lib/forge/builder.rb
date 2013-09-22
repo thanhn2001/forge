@@ -26,22 +26,57 @@ module Forge
       FileUtils.rm_r Dir.glob @project.build_path.join('*')
     end
 
+    # Removes a single file from the build directory.
+    #
+    # @param [String|Pathname] path Relative from build_path
+    #
+    # @return [void]
+    def clean_file(filename)
+      @project.build_path.join(filename).unlink
+    end
+
     # Removes all templates from the build directory
     #
     # @return [void]
     def clean_templates
       Dir.glob(@project.build_path.join('**/*.php')).each do |path|
-        # `path` is a absolute
-        FileUtils.rm(path) unless path =~ /functions\.php|includes\//
+        clean_template(path)
       end
+    end
+
+    # Removes a single template from the build directory
+    #
+    # @param [String|Pathname] path Absolute path to source template
+    #
+    # @return [void]
+    def clean_template(path)
+      dest = template_destination(path)
+      dest.unlink if dest.exist? && path.to_s !~ /functions\.php|includes\//
     end
 
     # Copies all templates to the build directory
     #
     # @return [void]
     def copy_templates
-      # TODO restore ERB functionality
-      FileUtils.cp_r "#{ @project.templates_path.to_s }/.", @project.build_path
+      Dir.glob(@project.templates_path.join('**', '*')).each do |path|
+        copy_template(path)
+      end
+    end
+
+    # Copies a single template to the build directory
+    #
+    # @param [String|Pathname] path Absolute path to source template
+    #
+    # @return [void]
+    def copy_template(path)
+      dest = template_destination(path)
+
+      if File.directory?(path) && !dest.exist?
+        FileUtils.mkdir_p dest
+      else
+        # TODO restore ERB functionality
+        FileUtils.cp path, dest
+      end
     end
 
     # Removes all functions from the build directory
@@ -77,7 +112,7 @@ module Forge
     #
     # @return [void]
     def clean_includes
-      FileUtils.rm_rf @project.build_path.join('includes')
+      FileUtils.rm_r @project.build_path.join('includes')
     end
 
     # Copies all includes to the build directory
@@ -105,11 +140,6 @@ module Forge
         @task.say "Error while building #{ filename }:"
         @task.say e.message, Thor::Shell::Color::RED
         File.open(destination, 'w') { |f| file.puts(e.message) }
-
-        # TODO JASON LOLO WAT?
-        # Re-initializing sprockets to prevent further errors
-        # TODO: This is done for lack of a better solution
-        init_sprockets
       end
     end
 
@@ -117,6 +147,15 @@ module Forge
       @assets.each_logical_path(*@config.assets.precompile).each do |filename|
         compile_asset(filename)
       end
+    end
+
+    protected
+
+    # @return Pathname
+    def template_destination(path)
+      path = Pathname.new(path)
+      filename = path.relative_path_from(@project.templates_path)
+      @project.build_path.join(filename)
     end
 
   end

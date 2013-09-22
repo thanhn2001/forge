@@ -9,7 +9,11 @@ describe Forge::Guard do
 
   describe '#identify_file' do
     it 'should properly identify the functions.php file' do
-      subject.identify_file("/Users/jason/Projects/walmart-labs-site/source/functions/functions.php").should eql :function
+      subject.identify_file('/some-project/source/functions/functions.php').should eql :function
+    end
+
+    it 'should properly identify an image asset' do
+      subject.identify_file('/some-project/source/assets/images/lol.png').should eql :asset
     end
   end
 

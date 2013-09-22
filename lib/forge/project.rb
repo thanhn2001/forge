@@ -68,50 +68,57 @@ module Forge
     # @depreciated Backwards compatibility. Just use `id` going forward.
     alias_method :theme_id, :id
 
+    # @return [Pathname]
     def assets_path
-      @assets_path ||= Pathname.new(source_path.join('assets'))
+      @assets_path ||= source_path.join('assets')
     end
 
+    # @return [Pathname]
     def stylesheets_path
       assets_path.join('stylesheets')
     end
 
+    # @return [Pathname]
     def images_path
       assets_path.join('images')
     end
 
+    # @return [Pathname]
     def javascripts_path
       assets_path.join('javascripts')
     end
 
+    # @return [Pathname]
     def fonts_path
       assets_path.join('fonts')
     end
 
+    # @return [Pathname]
     def build_path
       @build_path ||= root.join('.forge', 'build')
     end
 
+    # @return [Pathname]
     def source_path
       @source_path ||= root.join('source')
     end
 
-    def package_path
-      File.join(self.root, 'package')
-    end
-
+    # @return [Pathname]
     def templates_path
       source_path.join('templates')
     end
 
+    # @return [Pathname]
     def functions_path
       source_path.join('functions')
     end
 
+    # @return [Pathname]
     def includes_path
       source_path.join('includes')
     end
 
+    # @return [Pathname]
     def config_file
       @config_file ||= root.join('config.rb')
     end
