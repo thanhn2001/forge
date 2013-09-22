@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Forge::Guard do
 
-  let(:project) { Forge::Project.new('/tmp/', nil, {name: 'Hello'}) }
+  let(:project) { Forge::Project.new('/tmp/', {name: 'Hello'}) }
   let(:guard) { Forge::Guard.new(project, nil) }
 
   subject { guard }

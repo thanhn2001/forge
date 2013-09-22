@@ -1,19 +1,11 @@
-require 'sprockets'
-require 'sprockets-sass'
-require 'sass'
-
 module Forge
   class Builder
 
-    LOOSE_ASSETS = lambda do |filename, path|
-      path =~ /source\/assets/ && filename !~ /^_|\/_/ #&& %w[.js .css].include?(File.extname(filename))
-    end
-
     def initialize(project)
       @project = project
+      @config  = project.config
+      @assets  = project.assets
       @task    = project.task
-
-      init_sprockets
     end
 
     # Runs all the methods necessary to build a completed project
@@ -122,28 +114,8 @@ module Forge
     end
 
     def compile_assets
-      precompile = [LOOSE_ASSETS, 'style.css', 'theme.js']
-      @assets.each_logical_path(*precompile).each do |filename|
+      @assets.each_logical_path(*@config.assets.precompile).each do |filename|
         compile_asset(filename)
-      end
-    end
-
-    private
-
-    def init_sprockets
-      @assets = Sprockets::Environment.new
-
-      @assets.append_path @project.javascripts_path
-      @assets.append_path @project.stylesheets_path
-      @assets.append_path @project.images_path
-      @assets.append_path @project.fonts_path
-
-      # Passing the @project instance variable to the Sprockets::Context instance
-      # used for processing the asset ERB files. Ruby meta-programming, FTW.
-      @assets.context_class.instance_exec(@project) do |project|
-        define_method :config do
-          project.config
-        end
       end
     end
 

@@ -10,8 +10,9 @@ module Forge
 
     desc "create DIRECTORY", "Creates a Forge project"
     def create(dir)
-      theme = { name: dir }
-      Forge::Project.create(dir, theme, self)
+      # TODO options for theme id, name, etc.
+      config = { }
+      Forge::Project.create(dir, config, self)
     end
 
     desc "link PATH", "Create a symbolic link to the compilation directory"
@@ -28,7 +29,7 @@ module Forge
     desc "watch", "Start watch process"
     long_desc "Watches the source directory in your project for changes, and reflects those changes in a compile folder"
     def watch
-      project = Forge::Project.new('.', self)
+      project = Forge::Project.new('.', nil, self)
       guard = Forge::Guard.new(project, self)
       guard.start!
     end
@@ -36,7 +37,7 @@ module Forge
     desc "build DIRECTORY", "Build your theme into specified directory"
     option :clean, type: :boolean
     def build(dir = 'build')
-      project = Forge::Project.new('.', self)
+      project = Forge::Project.new('.', nil, self)
 
       builder = Builder.new(project)
       builder.build

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Forge::Project do
 
-  let(:project) { Forge::Project.new('/tmp/', nil, {name: 'Hello'}) }
+  let(:project) { Forge::Project.new('/tmp/', { id: 'hello' }) }
 
   describe :config_file do
     it "should create an expanded path to the config file" do
@@ -19,12 +19,6 @@ describe Forge::Project do
   describe :build_dir do
     it "should create an expanded path to the forge build directory" do
       project.build_path.to_s.should == '/tmp/.forge/build'
-    end
-  end
-
-  describe :theme_id do
-    it "should be the same as the project folder" do
-      project.theme_id.should == 'tmp'
     end
   end
 

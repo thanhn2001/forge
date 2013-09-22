@@ -1,34 +1,72 @@
+require 'ostruct'
 require 'pathname'
+require 'sprockets'
+require 'sprockets-sass'
 require 'compass'
 
 module Forge
   class Project
 
-    DEFAULT_COMPILED_ASSETS = %w(style.css theme.js admin.js)
+    DEFAULT_ASSETS = %w(style.css theme.js admin.js)
+
+    ASSET_MATCHER = lambda do |filename, path|
+      # By default, we include everything in the source/assets folder that is
+      # not prefixed with a `_` (i.e. a partial or import). This is,
+      # effectively, the Middleman approach.
+      #
+      # If we wanted to look more like Rails, we'd do that without the
+      # underscore prefixed exclusion, but instead exclude everything
+      # that was not a .js or .css file. Like this:
+      #
+      # && %w[.js .css].include?(File.extname(filename))
+      path =~ /source\/assets/ && filename !~ /^_|\/_/
+    end
 
     class << self
-      def create(root, config, task)
-        root = File.expand_path(root)
-
-        project = self.new(root, task, config)
+      # Create a new Forge project
+      #
+      # @param [Pathname|String] root The project root
+      # @param [Hash] options
+      # @param [Forge::CLI] task
+      #
+      # @return [Forge::Project] The new project
+      def create(root, options, task)
+        project = self.new(root, options, task)
         Generator.run(project)
-
         project
       end
     end
 
-    attr_accessor :root, :config, :task
-    attr_accessor :compiled_assets
+    attr_reader :assets, :config, :root, :task
 
-    def initialize(root, task, config = {})
-      @root   = Pathname.new(File.expand_path(root))
-      @config = config
+    # @param [Pathname|String] root The project root
+    # @param [Hash] options
+    # @param [Forge::CLI] task
+    #
+    # @return [Forge::Project] The new project
+    def initialize(root, options = {}, task = nil)
+      @root   = Pathname.new File.expand_path(root)
       @task   = task
 
-      @compiled_assets = DEFAULT_COMPILED_ASSETS.dup
+      @config = Config.new(options)
+      @config.id ||= File.basename(root).downcase.gsub(/\W/, '_')
+      @config.assets = OpenStruct.new(precompile: DEFAULT_ASSETS.dup)
+      @config.assets.precompile << ASSET_MATCHER
 
       load_config! if config_file.exist?
+
+      @assets = Sprockets::Environment.new
+      @assets.append_path javascripts_path
+      @assets.append_path stylesheets_path
+      @assets.append_path images_path
+      @assets.append_path fonts_path
     end
+
+    def id
+      config.id
+    end
+    # @depreciated Backwards compatibility. Just use `id` going forward.
+    alias_method :theme_id, :id
 
     def assets_path
       @assets_path ||= Pathname.new(source_path.join('assets'))
@@ -89,10 +127,6 @@ module Forge
       @task.link_file build_path, source
     end
 
-    def theme_id
-      File.basename(self.root).gsub(/\W/, '_')
-    end
-
     def get_binding
       binding
     end
@@ -104,12 +138,7 @@ module Forge
     private
 
     def load_config!
-      if config_file.exist?
-        instance_eval(File.read(config_file))
-      else
-        raise Error, "Could not find the config file, are you sure you're in a
-        forge project directory?"
-      end
+      instance_eval(File.read(config_file))
     end
 
   end
