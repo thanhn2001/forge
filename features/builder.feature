@@ -1,7 +1,7 @@
 Feature: Builder
   Scenario: Building a basic theme
-    Given I am in a forge project named "basic-theme"
-    When I successfully run `bundle exec forge build`
+    Given I am in a xerox project named "basic-theme"
+    When I successfully run `bundle exec xerox build`
     Then the following files should exist:
       | build/style.css         |
       | build/theme.js          |

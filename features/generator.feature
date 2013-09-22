@@ -1,6 +1,6 @@
 Feature: Generator
   Scenario: Checking the project folder for structure
-    Given I am in a forge project named "basic-theme"
+    Given I am in a xerox project named "basic-theme"
     When I cd to "source"
     Then the following files should exist:
       | functions/functions.php                       |

@@ -1,6 +1,6 @@
 require 'listen'
 
-module Forge
+module Xerox
   class Guard
 
     LISTEN_ACTIONS = [:modified, :added, :removed]

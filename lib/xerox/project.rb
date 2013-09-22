@@ -4,7 +4,7 @@ require 'sprockets'
 require 'sprockets-sass'
 require 'compass'
 
-module Forge
+module Xerox
   class Project
 
     DEFAULT_ASSETS = %w(style.css theme.js admin.js)
@@ -23,13 +23,13 @@ module Forge
     end
 
     class << self
-      # Create a new Forge project
+      # Create a new Xerox project
       #
       # @param [Pathname|String] root The project root
       # @param [Hash] options
-      # @param [Forge::CLI] task
+      # @param [Xerox::CLI] task
       #
-      # @return [Forge::Project] The new project
+      # @return [Xerox::Project] The new project
       def create(root, options, task)
         project = self.new(root, options, task)
         Generator.run(project)
@@ -41,9 +41,9 @@ module Forge
 
     # @param [Pathname|String] root The project root
     # @param [Hash] options
-    # @param [Forge::CLI] task
+    # @param [Xerox::CLI] task
     #
-    # @return [Forge::Project] The new project
+    # @return [Xerox::Project] The new project
     def initialize(root, options = {}, task = nil)
       @root   = Pathname.new File.expand_path(root)
       @task   = task
@@ -95,7 +95,7 @@ module Forge
 
     # @return [Pathname]
     def build_path
-      @build_path ||= root.join('.forge', 'build')
+      @build_path ||= root.join('.xerox', 'build')
     end
 
     # @return [Pathname]
@@ -128,7 +128,7 @@ module Forge
       source = File.expand_path(source)
 
       unless File.directory?(File.dirname(source))
-        raise Forge::LinkSourceDirNotFound
+        raise Xerox::LinkSourceDirNotFound
       end
 
       @task.link_file build_path, source

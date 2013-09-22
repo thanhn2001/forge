@@ -1,20 +1,25 @@
-## Forge is a toolkit for bootstrapping and developing WordPress themes.
+## Xerox is a toolkit for bootstrapping and developing WordPress themes.
 
-[Forge website](http://forge.thethemefoundry.com/)
+[Xerox website](https://github.com/jasonwebster/xerox)
 
-[User's manual](http://forge.thethemefoundry.com/manual)
+Xerox makes building WordPress themes managable for people used to working
+with Sass, CoffeeScript and a Sprockets based asset pipeline.
+
+Props to the Theme Foundry guys for writing
+[forge](http://forge.thethemefoundry.com/), on which Xerox was initially based.
 
 -----
 
-Current Version: **0.5.0**
+Current Version: **0.1.0**
 
-Install Forge (requires [Ruby](http://www.ruby-lang.org/) and [RubyGems](http://rubygems.org/)):
+Install Xerox (requires [Ruby](http://www.ruby-lang.org/),
+[RubyGems](http://rubygems.org/), and [Bundler](http://bundler.io/)):
 
-    $ gem install forge
+    $ gem install xerox
 
-Create your new theme project:
+Create your new project:
 
-    $ forge create your_theme
+    $ xerox create your_theme
 
 Change to your new project directory:
 
@@ -22,20 +27,18 @@ Change to your new project directory:
 
 Link to your WordPress theme folder:
 
-    $ forge link /path/to/wordpress/wp-content/themes/your_theme
+    $ xerox link /path/to/wordpress/wp-content/themes/your_theme
 
 Watch for changes and start developing!
 
-    $ forge watch
+    $ xerox watch
 
-Press Ctrl + C to exit watch mode
+Press Ctrl + C to exit watch mode.
 
-Build your theme into the build_here directory:
+Build your theme for packaging or deployment:
 
-    $ forge build build_here
+    $ xerox build
 
-Get a little help with the Forge commands:
+Get a little help with the Xerox commands:
 
-    $ forge help
-
-See the [user's manual](http://forge.thethemefoundry.com/manual) for more information.
+    $ xerox help

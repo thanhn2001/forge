@@ -1,4 +1,4 @@
-module Forge
+module Xerox
   class Generator
     class << self
       def run(project, layout='default')
@@ -14,7 +14,7 @@ module Forge
     end
 
     def create_structure
-      # Create the build directory for Forge output
+      # Create the build directory for Xerox output
       @task.empty_directory @project.build_path
 
       source_paths = [
@@ -31,7 +31,7 @@ module Forge
         ['templates', 'partials'],
       ]
 
-      # Build out Forge structure in the source directory
+      # Build out Xerox structure in the source directory
       source_paths.each do |path|
         @task.empty_directory File.join(@project.source_path, path)
       end
@@ -74,7 +74,7 @@ module Forge
     end
 
     def layout_path
-      @layout_path ||= File.join(Forge::ROOT, 'layouts', @layout)
+      @layout_path ||= File.join(Xerox::ROOT, 'layouts', @layout)
     end
 
     def run

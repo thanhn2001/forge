@@ -10,7 +10,7 @@ GIT
 PATH
   remote: .
   specs:
-    forge (0.6.0)
+    xerox (0.6.0)
       bundler (~> 1.1)
       coffee-script
       compass (>= 0.12)
@@ -92,5 +92,5 @@ PLATFORMS
 DEPENDENCIES
   aruba!
   cucumber
-  forge!
   rspec
+  xerox!

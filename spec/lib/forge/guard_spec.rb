@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Forge::Guard do
+describe Xerox::Guard do
 
-  let(:project) { Forge::Project.new('/tmp/', {name: 'Hello'}) }
-  let(:guard) { Forge::Guard.new(project, nil) }
+  let(:project) { Xerox::Project.new('/tmp/', {name: 'Hello'}) }
+  let(:guard) { Xerox::Guard.new(project, nil) }
 
   subject { guard }
 

@@ -1,6 +1,6 @@
 require 'ostruct'
 
-module Forge
+module Xerox
   class Config < OpenStruct
 
     def merge!(options)

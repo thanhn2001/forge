@@ -1,20 +1,20 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/forge/version', __FILE__)
+require File.expand_path('../lib/xerox/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.name          = "forge"
-  gem.authors       = ["Andy Adams", "Drew Strojny", "Matt Button", "Jason Webster"]
+  gem.name          = "xerox"
+  gem.authors       = ["Jason Webster", "Andy Adams", "Drew Strojny", "Matt Button"]
   gem.email         = ["jason@metalabdesign.com"]
   gem.license       = "MIT"
   gem.summary       = "A tool for developing WordPress themes"
   gem.description   = "A toolkit for bootstrapping and developing WordPress themes."
-  gem.homepage      = "https://github.com/jasonwebster/forge"
+  gem.homepage      = "https://github.com/jasonwebster/xerox"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {spec,features}/*`.split("\n")
-  gem.require_paths = ["lib"]
-  gem.version       = Forge::VERSION
+  gem.require_paths = ['lib']
+  gem.version       = Xerox::VERSION
 
   gem.add_dependency "bundler",      "~> 1.1"
   gem.add_dependency "coffee-script"

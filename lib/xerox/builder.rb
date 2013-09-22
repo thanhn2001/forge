@@ -1,4 +1,4 @@
-module Forge
+module Xerox
   class Builder
 
     def initialize(project)

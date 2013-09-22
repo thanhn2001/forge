@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Forge::Project do
+describe Xerox::Project do
 
-  let(:project) { Forge::Project.new('/tmp/', { id: 'hello' }) }
+  let(:project) { Xerox::Project.new('/tmp/', { id: 'hello' }) }
 
   describe :config_file do
     it "should create an expanded path to the config file" do
@@ -17,8 +17,8 @@ describe Forge::Project do
   end
 
   describe :build_dir do
-    it "should create an expanded path to the forge build directory" do
-      project.build_path.to_s.should == '/tmp/.forge/build'
+    it "should create an expanded path to the xerox build directory" do
+      project.build_path.to_s.should == '/tmp/.xerox/build'
     end
   end
 

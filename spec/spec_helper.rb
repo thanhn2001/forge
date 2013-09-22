@@ -1,7 +1,7 @@
 $: << File.dirname(__FILE__) + '/../lib'
 
 require 'rspec'
-require 'forge'
+require 'xerox'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.

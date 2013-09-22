@@ -1,8 +1,8 @@
-Given(/^I am in a forge project named "([^"]+)"$/) do |name|
-  cli = Forge::CLI.new
+Given(/^I am in a xerox project named "([^"]+)"$/) do |name|
+  cli = Xerox::CLI.new
 
   cli.shell.mute do
-    Forge::Project.create(File.join(current_dir, name), { id: name }, cli)
+    Xerox::Project.create(File.join(current_dir, name), { id: name }, cli)
   end
 
   cd name

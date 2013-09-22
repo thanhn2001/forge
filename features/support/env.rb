@@ -11,7 +11,7 @@ file_path = Pathname.new(__FILE__).realpath
 libdir = File.join(File.dirname(File.dirname(File.dirname(file_path))), "lib")
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
-require 'forge'
+require 'xerox'
 
 require 'rspec/expectations'
 require 'aruba/cucumber'

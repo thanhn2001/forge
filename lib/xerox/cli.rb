@@ -1,6 +1,6 @@
 require 'thor'
 
-module Forge
+module Xerox
   class CLI < Thor
     include Thor::Actions
 
@@ -8,18 +8,18 @@ module Forge
       File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'layouts'))
     end
 
-    desc "create DIRECTORY", "Creates a Forge project"
+    desc "create DIRECTORY", "Creates a Xerox project"
     def create(dir)
       # TODO options for theme id, name, etc.
       config = { }
-      Forge::Project.create(dir, config, self)
+      Xerox::Project.create(dir, config, self)
     end
 
     desc "link PATH", "Create a symbolic link to the compilation directory"
     long_desc "This command will symlink the compiled version of the theme to the specified path.\n\n"+
-      "To compile the theme use the `forge watch` command"
+      "To compile the theme use the `xerox watch` command"
     def link(path)
-      project = Forge::Project.new('.', self)
+      project = Xerox::Project.new('.', self)
 
       FileUtils.mkdir_p project.build_path unless File.directory?(project.build_path)
 
@@ -29,15 +29,15 @@ module Forge
     desc "watch", "Start watch process"
     long_desc "Watches the source directory in your project for changes, and reflects those changes in a compile folder"
     def watch
-      project = Forge::Project.new('.', nil, self)
-      guard = Forge::Guard.new(project, self)
+      project = Xerox::Project.new('.', nil, self)
+      guard = Xerox::Guard.new(project, self)
       guard.start!
     end
 
     desc "build DIRECTORY", "Build your theme into specified directory"
     option :clean, type: :boolean
     def build(dir = 'build')
-      project = Forge::Project.new('.', nil, self)
+      project = Xerox::Project.new('.', nil, self)
 
       builder = Builder.new(project)
       builder.build
