@@ -22,21 +22,6 @@ module Forge
       path =~ /source\/assets/ && filename !~ /^_|\/_/
     end
 
-    class << self
-      # Create a new Forge project
-      #
-      # @param [Pathname|String] root The project root
-      # @param [Hash] options
-      # @param [Forge::CLI] task
-      #
-      # @return [Forge::Project] The new project
-      def create(root, options, task)
-        project = self.new(root, options, task)
-        Generator.run(project)
-        project
-      end
-    end
-
     attr_reader :assets, :config, :root, :task
 
     # @param [Pathname|String] root The project root

@@ -1,4 +1,5 @@
 require 'forge/error'
+require 'forge/version'
 
 module Forge
   ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
