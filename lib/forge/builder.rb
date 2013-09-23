@@ -1,189 +1,162 @@
-require 'sprockets'
-require 'sprockets-sass'
-require 'sass'
-
 module Forge
   class Builder
+
     def initialize(project)
       @project = project
+      @config  = project.config
+      @assets  = project.assets
       @task    = project.task
-      @templates_path = @project.templates_path
-      @assets_path = @project.assets_path
-      @functions_path = @project.functions_path
-      @includes_path = @project.includes_path
-      @package_path = @project.package_path
-
-      init_sprockets
     end
 
     # Runs all the methods necessary to build a completed project
+    #
+    # @return [void]
     def build
-      clean_build_directory
+      clean_all
       copy_templates
       copy_functions
       copy_includes
-      build_assets
+      compile_assets
     end
 
-    # Empty out the build directory
-    def clean_build_directory
-      FileUtils.rm_rf @project.build_path.join('*')
+    # Completely empties out the build directory
+    #
+    # @return [void]
+    def clean_all
+      FileUtils.rm_r Dir.glob @project.build_path.join('*')
     end
 
+    # Removes a single file from the build directory.
+    #
+    # @param [String|Pathname] path Relative from build_path
+    #
+    # @return [void]
+    def clean_file(filename)
+      @project.build_path.join(filename).unlink
+    end
+
+    # Removes all templates from the build directory
+    #
+    # @return [void]
     def clean_templates
       Dir.glob(@project.build_path.join('**/*.php')).each do |path|
-        # `path` is a absolute
-        FileUtils.rm(path) unless path =~ /functions\.php|includes\//
+        clean_template(path)
       end
     end
 
-    def copy_templates
-      # TODO restore ERB functionality
-      FileUtils.cp_r "#{ @templates_path.to_s }/.", @project.build_path
+    # Removes a single template from the build directory
+    #
+    # @param [String|Pathname] path Absolute path to source template
+    #
+    # @return [void]
+    def clean_template(path)
+      dest = template_destination(path)
+      dest.unlink if dest.exist? && path.to_s !~ /functions\.php|includes\//
     end
 
+    # Copies all templates to the build directory
+    #
+    # @return [void]
+    def copy_templates
+      Dir.glob(@project.templates_path.join('**', '*')).each do |path|
+        copy_template(path)
+      end
+    end
+
+    # Copies a single template to the build directory
+    #
+    # @param [String|Pathname] path Absolute path to source template
+    #
+    # @return [void]
+    def copy_template(path)
+      dest = template_destination(path)
+
+      if File.directory?(path) && !dest.exist?
+        FileUtils.mkdir_p dest
+      else
+        # TODO restore ERB functionality
+        FileUtils.cp path, dest
+      end
+    end
+
+    # Removes all functions from the build directory
+    #
+    # Deletes `functions.php` and `functions/`
+    #
+    # @return [void]
     def clean_functions
       FileUtils.rm @project.build_path.join('functions.php')
       FileUtils.rm_rf @project.build_path.join('functions')
     end
 
+    # Copies all functions to the build directory
+    #
+    # @return [void]
     def copy_functions
-      functions_erb_path = File.join(@functions_path, 'functions.php.erb')
-      functions_php_path = File.join(@functions_path, 'functions.php')
+      return unless @project.functions_path.exist?
 
-      if File.exists?(functions_erb_path)
-        destination = File.join(@project.build_path, 'functions.php')
-        write_erb(functions_erb_path, destination)
-      elsif File.exists?(functions_php_path)
-        FileUtils.cp functions_php_path, @project.build_path
-      end
+      functions_file_path = @project.functions_path.join('functions.php')
+      FileUtils.cp functions_file_path, @project.build_path if functions_file_path.exist?
 
-      functions_paths = Dir.glob(@functions_path.join('*')).reject do |filename|
-        [functions_erb_path, functions_php_path].include?(filename)
-      end
+      functions_paths = Dir.glob(File.join(@project.functions_path, '**', '*'))
+      functions_paths.delete(functions_file_path.to_s)
 
       unless functions_paths.empty?
-        # Create the includes folder in the build directory
-        FileUtils.mkdir_p(File.join(@project.build_path, 'functions'))
-
-        # Iterate over all files in source/functions, skipping the actual functions.php file
-        paths = Dir.glob(File.join(@functions_path, '**', '*')).reject {|filename| [functions_erb_path, functions_php_path].include?(filename) }
-
-        copy_paths_with_erb(paths, @functions_path, @project.build_path.join('functions'))
+        functions_dir = @project.build_path.join('functions')
+        FileUtils.mkdir_p(functions_dir)
+        FileUtils.cp(functions_paths, functions_dir)
       end
     end
 
+    # Removes all includes from the build directory
+    #
+    # @return [void]
     def clean_includes
-      FileUtils.rm_rf @project.build_path.join('includes')
+      FileUtils.rm_r @project.build_path.join('includes')
     end
 
+    # Copies all includes to the build directory
+    #
+    # @return [void]
     def copy_includes
-      unless Dir.glob(File.join(@includes_path, '*')).empty?
-        # Create the includes folder in the build directory
-        FileUtils.mkdir(@project.build_path.join('includes'))
+      return unless @project.includes_path.exist?
 
-        # Iterate over all files in source/includes, so we can exclude if necessary
-        paths = Dir.glob(@includes_path.join('**', '*'))
-        copy_paths_with_erb(paths, @includes_path, @project.build_path.join('includes'))
+      paths = Dir.glob(@project.includes_path.join('**', '*'))
+      if !paths.empty?
+        dest = @project.build_path.join('includes')
+        FileUtils.mkdir(dest) unless dest.directory?
+        FileUtils.cp(paths, dest)
       end
     end
 
-    def clean_images
-      FileUtils.rm_rf @project.build_path.join('images')
+    def clean_asset(filename)
+      @project.build_path.join(filename).unlink
     end
 
-    def build_assets
-      @project.compiled_assets.each do |asset_file|
-        destination = @project.build_path.join(asset_file)
-        asset = @sprockets.find_asset(asset_file)
-
-        if !asset.nil?
-          puts "Compiling #{ asset.logical_path } ..."
-          asset.write_to(destination)
-        end
-
-        # Catch any sprockets errors and continue the process
-        begin
-        # FileUtils.mkdir_p(File.dirname(destination)) unless File.directory?(File.dirname(destination))
-        rescue Exception => e
-          @task.say "Error while building #{asset.last}:"
-          @task.say e.message, Thor::Shell::Color::RED
-          File.open(destination, 'w') do |file|
-            file.puts(e.message)
-          end
-
-          # TODO JASON LOLO WAT?
-          # Re-initializing sprockets to prevent further errors
-          # TODO: This is done for lack of a better solution
-          init_sprockets
-        end
-      end
-
-      # Copy the images & fonts directly directory over
-      FileUtils.cp_r(@project.images_path, @project.build_path)
-      FileUtils.cp_r(@project.fonts_path, @project.build_path)
-
-      # Check for screenshot and move it into main build directory
-      Dir.glob(File.join(@project.build_path, 'images', '*')).each do |filename|
-        if filename.index(/screenshot\.(png|jpg|jpeg|gif)/)
-          FileUtils.mv(filename, @project.build_path + File::SEPARATOR )
-        end
+    def compile_asset(filename)
+      begin
+        @assets[filename].write_to @project.build_path.join(filename)
+      rescue Exception => e
+        @task.say "Error while building #{ filename }:"
+        @task.say e.message, Thor::Shell::Color::RED
+        File.open(destination, 'w') { |f| file.puts(e.message) }
       end
     end
 
-    private
-
-    def copy_paths_with_erb(paths, source_dir, destination_dir)
-      paths.each do |path|
-        # Remove source directory from full file path to get the relative path
-        relative_path = path.gsub(source_dir.to_s, '')
-
-        destination = File.join(destination_dir.to_s, relative_path)
-
-        if destination.end_with?('.erb')
-          # Remove the .erb extension if the path was an erb file
-          destination = destination.slice(0..-5)
-          # And process it as an erb
-          write_erb(path, destination)
-        else
-          # Otherwise, we simply move the file over
-          FileUtils.mkdir_p(destination) if File.directory?(path)
-          FileUtils.cp path, destination unless File.directory?(path)
-        end
-      end
-    end
-
-    def init_sprockets
-      @sprockets = Sprockets::Environment.new
-
-      @sprockets.append_path @project.javascripts_path
-      @sprockets.append_path @project.stylesheets_path
-      @sprockets.append_path @project.fonts_path
-
-      # Passing the @project instance variable to the Sprockets::Context instance
-      # used for processing the asset ERB files. Ruby meta-programming, FTW.
-      @sprockets.context_class.instance_exec(@project) do |project|
-        define_method :config do
-          project.config
-        end
+    def compile_assets
+      @assets.each_logical_path(*@config.assets.precompile).each do |filename|
+        compile_asset(filename)
       end
     end
 
     protected
 
-    # Write an .erb from source to destination, catching and reporting errors along the way
-    def write_erb(source, destination)
-      begin
-        @task.shell.mute do
-          @task.create_file(destination) do
-            @project.parse_erb(source)
-          end
-        end
-      rescue Exception => e
-        @task.say "Error while building #{File.basename(source)}:"
-        @task.say e.message + "\n", Thor::Shell::Color::RED
-        exit
-      end
+    # @return Pathname
+    def template_destination(path)
+      path = Pathname.new(path)
+      filename = path.relative_path_from(@project.templates_path)
+      @project.build_path.join(filename)
     end
+
   end
 end

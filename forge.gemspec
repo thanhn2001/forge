@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.license       = "MIT"
   gem.summary       = "A tool for developing WordPress themes"
   gem.description   = "A toolkit for bootstrapping and developing WordPress themes."
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/jasonwebster/forge"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
@@ -19,9 +19,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency "bundler",      "~> 1.1"
   gem.add_dependency "coffee-script"
   gem.add_dependency "compass",      ">= 0.12"
-  gem.add_dependency "guard",        "~> 1.3.0"
-  gem.add_dependency "guard-livereload", "~> 1.0.3"
   gem.add_dependency "json",         "~> 1.8.0"
+  gem.add_dependency "listen",       "~> 1.3"
   gem.add_dependency "rack",         ">= 1.4.5"
   gem.add_dependency "rake"
   gem.add_dependency "rb-fsevent",   "~> 0.9.1"

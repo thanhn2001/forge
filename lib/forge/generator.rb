@@ -1,4 +1,3 @@
-
 module Forge
   class Generator
     class << self
@@ -104,6 +103,7 @@ module Forge
     end
 
     protected
+
     def render_directory(source, target)
       Dir.glob("#{source}/**/*") do |file|
         unless File.directory?(file)

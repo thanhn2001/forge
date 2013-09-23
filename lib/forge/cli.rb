@@ -1,9 +1,4 @@
 require 'thor'
-require 'yaml'
-require 'guard/forge/assets'
-require 'guard/forge/config'
-require 'guard/forge/templates'
-require 'guard/forge/functions'
 
 module Forge
   class CLI < Thor
@@ -15,10 +10,9 @@ module Forge
 
     desc "create DIRECTORY", "Creates a Forge project"
     def create(dir)
-      theme = {}
-      theme[:name] = dir
-
-      project = Forge::Project.create(dir, theme, self)
+      # TODO options for theme id, name, etc.
+      config = { }
+      Forge::Project.create(dir, config, self)
     end
 
     desc "link PATH", "Create a symbolic link to the compilation directory"
@@ -35,30 +29,30 @@ module Forge
     desc "watch", "Start watch process"
     long_desc "Watches the source directory in your project for changes, and reflects those changes in a compile folder"
     def watch
-      project = Forge::Project.new('.', self)
-
-      # Empty the build directory before starting up to clean out old files
-      FileUtils.rm_rf project.build_path
-      FileUtils.mkdir_p project.build_path
-
-      Forge::Guard.start(project, self)
+      project = Forge::Project.new('.', nil, self)
+      guard = Forge::Guard.new(project, self)
+      guard.start!
     end
 
     desc "build DIRECTORY", "Build your theme into specified directory"
-    def build(dir='build')
-      project = Forge::Project.new('.', self)
+    option :clean, type: :boolean
+    def build(dir = 'build')
+      project = Forge::Project.new('.', nil, self)
 
       builder = Builder.new(project)
       builder.build
 
-      Dir.glob(File.join(dir, '**', '*')).each do |file|
-        shell.mute { remove_file(file) }
+      if options[:clean]
+        Dir.glob(File.join(dir, '**', '*')).each do |file|
+          shell.mute { remove_file(file) }
+        end
       end
 
       directory(project.build_path, dir)
     end
 
     protected
+
     def do_link(project, path)
       begin
         project.link(path)
