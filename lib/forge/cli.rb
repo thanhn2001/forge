@@ -5,15 +5,10 @@ module Forge
     include Thor::Actions
 
     def self.source_root
-      File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'layouts'))
+      File.expand_path(File.join(Forge::ROOT, 'layouts'))
     end
 
-    desc "create DIRECTORY", "Creates a Forge project"
-    def create(dir)
-      # TODO options for theme id, name, etc.
-      config = { }
-      Forge::Project.create(dir, config, self)
-    end
+    register(Generator, 'create', 'create LOCATION', 'Creates a Forge project')
 
     desc "link PATH", "Create a symbolic link to the compilation directory"
     long_desc "This command will symlink the compiled version of the theme to the specified path.\n\n"+

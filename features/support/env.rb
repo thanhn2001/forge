@@ -7,11 +7,9 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
-file_path = Pathname.new(__FILE__).realpath
-libdir = File.join(File.dirname(File.dirname(File.dirname(file_path))), "lib")
-$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
-
-require 'forge'
+$: << File.dirname(__FILE__) + '/../../lib'
 
 require 'rspec/expectations'
 require 'aruba/cucumber'
+
+require 'forge'

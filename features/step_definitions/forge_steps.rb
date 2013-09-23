@@ -1,10 +1,8 @@
 Given(/^I am in a forge project named "([^"]+)"$/) do |name|
   cli = Forge::CLI.new
-
   cli.shell.mute do
-    Forge::Project.create(File.join(current_dir, name), { id: name }, cli)
+    cli.invoke(:create, [File.join(current_dir, name)])
   end
-
   cd name
 end
 

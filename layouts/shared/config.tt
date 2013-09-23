@@ -1,5 +1,3 @@
-# WordPress theme information is stored in source/assets/stylesheets/_header.scss as of Forge version 0.5
-
 # JavaScript compression
 # config[:compress_js] = false
 
