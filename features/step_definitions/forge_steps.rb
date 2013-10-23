@@ -5,4 +5,3 @@ Given(/^I am in a forge project named "([^"]+)"$/) do |name|
   end
   cd name
 end
-

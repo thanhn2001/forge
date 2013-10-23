@@ -128,7 +128,7 @@ module Forge
       if !paths.empty?
         dest = @project.build_path.join('includes')
         FileUtils.mkdir(dest) unless dest.directory?
-        FileUtils.cp(paths, dest)
+        FileUtils.cp_r(paths, dest)
       end
     end
 
