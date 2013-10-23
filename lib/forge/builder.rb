@@ -13,6 +13,9 @@ module Forge
     # @return [void]
     def build
       clean_all
+
+      FileUtils.mkdir_p(@project.build_path) unless @project.build_path.exist?
+
       copy_templates
       copy_functions
       copy_includes
