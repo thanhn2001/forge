@@ -56,7 +56,9 @@ module Forge
     end
 
     def start!
-      @builder.clean_all
+      @task.say 'forge is now watching'
+      @task.say 'Building entire project'
+      @builder.build
 
       options = {
         ignore: /\/\.[^\/]$/ # Hidden files
