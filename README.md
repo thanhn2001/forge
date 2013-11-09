@@ -1,12 +1,10 @@
+# Forge
+
+[![Build Status](https://travis-ci.org/jasonwebster/forge.png?branch=master)](https://travis-ci.org/jasonwebster/forge)
+
 ## Forge is a toolkit for bootstrapping and developing WordPress themes.
 
-[Forge website](http://forge.thethemefoundry.com/)
-
-[User's manual](http://forge.thethemefoundry.com/manual)
-
------
-
-Current Version: **0.5.0**
+Current Version: **0.6.1**
 
 Install Forge (requires [Ruby](http://www.ruby-lang.org/) and [RubyGems](http://rubygems.org/)):
 
@@ -38,4 +36,3 @@ Get a little help with the Forge commands:
 
     $ forge help
 
-See the [user's manual](http://forge.thethemefoundry.com/manual) for more information.
