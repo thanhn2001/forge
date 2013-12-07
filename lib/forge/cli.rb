@@ -5,7 +5,7 @@ module Forge
     include Thor::Actions
 
     def self.source_root
-      File.expand_path(File.join(Forge::ROOT, 'layouts'))
+      Forge.root.join('layouts').to_s
     end
 
     register(Generator, 'create', 'create LOCATION', 'Creates a Forge project')

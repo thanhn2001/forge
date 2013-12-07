@@ -1,6 +1,6 @@
 Feature: Generator
   Scenario: Checking the project folder for structure
-    Given I am in a forge project named "basic-theme"
+    Given a new theme named "basic-theme"
 
     Then the following files should exist:
       | Gemfile   |
@@ -15,4 +15,3 @@ Feature: Generator
       | assets/stylesheets/_base.sass                 |
 
     And the file "functions/functions.php" should contain "basic-theme_setup"
-

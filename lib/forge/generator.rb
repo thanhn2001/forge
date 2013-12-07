@@ -13,7 +13,7 @@ module Forge
     end
 
     def self.source_root
-      File.expand_path(File.join(Forge::ROOT, 'layouts'))
+      Forge.root.join('layouts').to_s
     end
 
     def create!
