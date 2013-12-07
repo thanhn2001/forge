@@ -26,7 +26,7 @@ Given(/^a fixture theme "([^"]*)"$/) do |path|
   next if File.basename(current_dir) == path
 
   # step %Q{a directory named "#{path}"}
-  mkdir path
+  create_dir path
 
   target_path = Forge.root.join("fixtures", path)
   FileUtils.cp_r(target_path, current_dir)

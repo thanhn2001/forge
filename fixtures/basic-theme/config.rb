@@ -1,3 +1,6 @@
+# JavaScript compression
+# config[:compress_js] = false
+
 # Compass configuration can also go here.
 # See http://compass-style.org/help/tutorials/configuration-reference/ for some of the options
 # Note: Most options (especially path-related options) will have no effect on Forge
@@ -7,5 +10,5 @@
 #   compass.output_style = :expanded # use :compressed for minified version
 # end
 
-# You can include additional Compass frameworks by requiring them:
-# require 'susy'
+# You can also include additional Compass frameworks by requiring them:
+# require 'stitch'

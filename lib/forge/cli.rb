@@ -14,17 +14,31 @@ module Forge
     long_desc "This command will symlink the compiled version of the theme to the specified path.\n\n"+
       "To compile the theme use the `forge watch` command"
     def link(path)
-      project = Forge::Project.new('.', self)
+      project = Forge::Project.new('.', {}, self)
 
       FileUtils.mkdir_p project.build_path unless File.directory?(project.build_path)
 
-      do_link(project, path)
+      begin
+        path = File.expand_path(path)
+
+        unless File.directory?(File.dirname(path))
+          raise Forge::LinkSourceDirNotFound
+        end
+
+        link_file project.build_path, path
+      rescue LinkSourceDirNotFound
+        say_status :error, "The path #{File.dirname(path)} does not exist", :red
+        exit 2
+      rescue Errno::EEXIST
+        say_status :error, "The path #{path} already exsts", :red
+        exit 2
+      end
     end
 
-    desc "watch", "Start watch process"
+    desc "watch", "Start the watch process"
     long_desc "Watches the source directory in your project for changes, and reflects those changes in a compile folder"
     def watch
-      project = Forge::Project.new('.', nil, self)
+      project = Forge::Project.new('.', {}, self)
       guard = Forge::Guard.new(project, self)
       guard.start!
     end
@@ -32,8 +46,7 @@ module Forge
     desc "build DIRECTORY", "Build your theme into specified directory"
     option :clean, type: :boolean
     def build(dir = 'build')
-      project = Forge::Project.new('.', nil, self)
-
+      project = Forge::Project.new('.', { env: 'build' }, self)
       builder = Builder.new(project)
       builder.build
 
@@ -44,20 +57,6 @@ module Forge
       end
 
       directory(project.build_path, dir)
-    end
-
-    protected
-
-    def do_link(project, path)
-      begin
-        project.link(path)
-      rescue LinkSourceDirNotFound
-        say_status :error, "The path #{File.dirname(path)} does not exist", :red
-        exit 2
-      rescue Errno::EEXIST
-        say_status :error, "The path #{path} already exsts", :red
-        exit 2
-      end
     end
   end
 end

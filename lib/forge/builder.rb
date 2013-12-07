@@ -138,11 +138,12 @@ module Forge
 
     def compile_asset(filename)
       begin
-        @assets[filename].write_to @project.build_path.join(filename)
+        dest = @project.build_path.join(filename)
+        @assets[filename].write_to dest
       rescue Exception => e
         @task.say "Error while building #{ filename }:"
         @task.say e.message, Thor::Shell::Color::RED
-        File.open(destination, 'w') { |f| file.puts(e.message) }
+        File.open(dest, 'w') { |f| f.puts(e.message) }
       end
     end
 

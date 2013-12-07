@@ -30,10 +30,10 @@ module Forge
     #
     # @return [Forge::Project] The new project
     def initialize(root, options = {}, task = nil)
-      @root   = Pathname.new File.expand_path(root)
-      @task   = task
+      @root = Pathname.new File.expand_path(root)
+      @task = task
 
-      @config = Config.new(options)
+      @config = Config.new({ env: ENV['FORGE_ENV'] || 'development' }.merge options)
       @config.id ||= File.basename(root).downcase.gsub(/\W/, '_')
       @config.assets = OpenStruct.new(precompile: DEFAULT_ASSETS.dup)
       @config.assets.precompile << ASSET_MATCHER
@@ -45,6 +45,14 @@ module Forge
       @assets.append_path stylesheets_path
       @assets.append_path images_path
       @assets.append_path fonts_path
+
+      build do
+        @assets.js_compressor = :uglify
+
+        Compass.configuration do |compass|
+          compass.output_style = :compressed
+        end
+      end
     end
 
     def id
@@ -52,6 +60,10 @@ module Forge
     end
     # @depreciated Backwards compatibility. Just use `id` going forward.
     alias_method :theme_id, :id
+
+    def build?
+      @config.env == 'build'
+    end
 
     # @return [Pathname]
     def assets_path
@@ -108,15 +120,8 @@ module Forge
       @config_file ||= root.join('config.rb')
     end
 
-    # Create a symlink from source to the project build dir
-    def link(source)
-      source = File.expand_path(source)
-
-      unless File.directory?(File.dirname(source))
-        raise Forge::LinkSourceDirNotFound
-      end
-
-      @task.link_file build_path, source
+    def build(&block)
+      yield @config if build?
     end
 
     def get_binding
