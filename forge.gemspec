@@ -20,7 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "coffee-script"
   gem.add_dependency "compass",      ">= 0.12"
   gem.add_dependency "json",         "~> 1.8.0"
-  gem.add_dependency "listen",       "~> 1.3"
+  gem.add_dependency "listen",       "~> 2.8"
   gem.add_dependency "rack",         ">= 1.4.5"
   gem.add_dependency "rake"
   gem.add_dependency "rb-fsevent",   "~> 0.9.1"
